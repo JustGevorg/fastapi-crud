@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from src.routers import books
+from src.routers import books_router
 
 app = FastAPI()
-app.include_router(books.router)
+app.include_router(books_router.router)
 
 
 @app.get("/")

@@ -9,7 +9,7 @@ class BaseService:
 
 
 class BookService(BaseService):
-    def create_book(self, new_book: schemas.CreateBook):
+    def create_book(self, new_book: schemas.CreateBook) -> Book:
         new_book = Book(**new_book.dict())
         self.db.add(new_book)
         self.db.commit()
