@@ -1,5 +1,5 @@
-from . import schemas
-from .db.models import Book
+from src import schemas
+from src.db.models import Book
 from sqlalchemy.orm import Session
 
 
