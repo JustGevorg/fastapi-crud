@@ -14,4 +14,8 @@ class BookService(BaseService):
         self.db.add(new_book)
         self.db.commit()
         self.db.refresh(new_book)
+
         return new_book
+
+    def get_book(self, book_id: int) -> Book:
+        return self.db.query(Book).filter(Book.id == book_id).first()
