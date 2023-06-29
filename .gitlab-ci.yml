@@ -2,13 +2,11 @@ image: alpine:latest
 
 stages:
   - build
-  # - test
   - linting
-  - commit_test
-  - merge_test
+
 
 build:
-  image: python:3.11
+  image: alpine:latest
   stage: build
   script:
     - apt-get update -q -y
@@ -16,6 +14,7 @@ build:
     - pip install virtualenv
     - python3 -m venv env
     - source env/bin/activate
+    - export PYTHONPATH=$(pwd)
     - pip install -r requirements.txt
 
 # pytest:
@@ -31,5 +30,3 @@ pylint:
   script:
     - echo "Linting code"
     - pylint src
-  dependencies:
-    - build
