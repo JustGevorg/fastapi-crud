@@ -6,7 +6,7 @@ stages:
 
 
 build:
-  image: alpine:latest
+  image: python:3.11
   stage: build
   script:
     - apt-get update -q -y
