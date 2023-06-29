@@ -30,6 +30,6 @@ pylint:
   stage: linting
   script:
     - echo "Linting code"
-    - pylint
+    - pylint src
   dependencies:
     - build
