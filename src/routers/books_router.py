@@ -24,5 +24,8 @@ async def create_book(
 
 
 @router.put("/{book_id}", response_model=schemas.BookDB)
-async def update_book(book_id: int, db: Session = Depends(dependencies.get_db)):
-    pass
+async def update_book(book_id: int, update_data: schemas.CreateBook, db: Session = Depends(dependencies.get_db)):
+    service = services.BookService(db=db)
+    updated_book = service.update_book(book_id=book_id, update_data=update_data)
+
+    return updated_book
