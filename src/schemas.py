@@ -14,8 +14,6 @@ class CreateBook(BaseModel):
 
 
 class BookDB(BaseAlchemySchema, CreateBook):
-    pass
-
     class Config:
         orm_mode = True
 
