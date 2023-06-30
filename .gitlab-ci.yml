@@ -1,13 +1,13 @@
 image: alpine:latest
 
-stages:
-  - build
-  - linting
+# stages:
+#   - build
+#   - linting
 
 
 build:
-  image: python:3.11
-  stage: build
+  # image: python:3.11
+  # stage: build
   script:
     - apt-get update -q -y
     - apt install python3-pip  -y
@@ -26,7 +26,6 @@ build:
 #     - build
 
 pylint:
-  stage: linting
   script:
     - echo "Linting code"
     - pylint src
