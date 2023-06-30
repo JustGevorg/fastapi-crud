@@ -1,5 +1,6 @@
 from src import schemas
 from src.db.models import Book
+from sqlalchemy import select, update, delete
 from sqlalchemy.orm import Session
 
 
@@ -28,12 +29,10 @@ class BookService(BaseService):
         return self.db.query(Book).filter(Book.id == book_id).first()
 
     def update_book(self, book_id: int, update_data: schemas.CreateBook) -> Book:
-        updated_book = (
-            self.db.query(Book)
-            .filter(Book.id == book_id)
-            .update(values=update_data.dict())
-        )
+        # updated_book =self.db.query(Book).filter(Book.id == book_id).update(values=update_data.dict())
+        # self.db.commit()
+        # self.db.refresh(updated_book)
+        stmt = update(Book).where(Book.id == book_id).values(update_data.dict()).returning(Book)
+        updated_book = self.db.execute(stmt).one()
         self.db.commit()
-        self.db.refresh(updated_book)
-
         return updated_book

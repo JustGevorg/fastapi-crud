@@ -27,5 +27,6 @@ async def create_book(
 async def update_book(book_id: int, update_data: schemas.CreateBook, db: Session = Depends(dependencies.get_db)):
     service = services.BookService(db=db)
     updated_book = service.update_book(book_id=book_id, update_data=update_data)
-
-    return updated_book
+    print(updated_book)
+    # TODO: разобраться с one, first и проч
+    return updated_book[0]
