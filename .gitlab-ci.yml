@@ -19,7 +19,7 @@ build:
 
 pylint:
   stage: linting
-  image: alpine:latest
+  image: python:3.11
   script:
     - echo "Linting code"
     - pylint src
