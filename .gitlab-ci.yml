@@ -1,8 +1,8 @@
 image: alpine:latest
 
-# stages:
-#   - build
-#   - linting
+stages:
+  - build
+  - linting
 
 
 build:
