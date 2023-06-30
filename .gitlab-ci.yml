@@ -19,7 +19,7 @@ build:
 
 pylint:
   stage: linting
-  alpine: latest
+  image: alpine:latest
   script:
     - echo "Linting code"
     - pylint src
