@@ -1,19 +1,12 @@
 from src import schemas
 from src.db.models import Book
-from sqlalchemy import select, update, delete
+from sqlalchemy import update, delete
 from sqlalchemy.orm import Session
 
 
 class BaseService:
     def __init__(self, db: Session) -> None:
         self.db = db
-
-    def update(self, model, **kwargs):
-        for k, v in kwargs.items():
-            if hasattr(model, k):
-                setattr(model, k, v)
-            else:
-                raise AttributeError
 
 
 class BookService(BaseService):
@@ -29,7 +22,24 @@ class BookService(BaseService):
         return self.db.query(Book).filter(Book.id == book_id).first()
 
     def update_book(self, book_id: int, update_data: schemas.CreateBook) -> Book:
-        stmt = update(Book).where(Book.id == book_id).values(update_data.dict()).returning(Book)
+        stmt = (
+            update(Book)
+            .where(Book.id == book_id)
+            .values(update_data.dict())
+            .returning(Book)
+        )
         updated_book = self.db.execute(stmt).scalars().first()
         self.db.commit()
+
         return updated_book
+
+    def delete_book(self, book_id: int) -> None:
+        stmt = (
+            delete(Book)
+            .where(Book.id == book_id)
+            .returning(Book.title, Book.pages_count)
+        )
+        deleted_book = self.db.execute(stmt).scalars().all()
+        self.db.commit()
+
+        return deleted_book
