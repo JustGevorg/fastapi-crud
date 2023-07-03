@@ -29,10 +29,7 @@ class BookService(BaseService):
         return self.db.query(Book).filter(Book.id == book_id).first()
 
     def update_book(self, book_id: int, update_data: schemas.CreateBook) -> Book:
-        # updated_book =self.db.query(Book).filter(Book.id == book_id).update(values=update_data.dict())
-        # self.db.commit()
-        # self.db.refresh(updated_book)
         stmt = update(Book).where(Book.id == book_id).values(update_data.dict()).returning(Book)
-        updated_book = self.db.execute(stmt).one()
+        updated_book = self.db.execute(stmt).scalars().first()
         self.db.commit()
         return updated_book
