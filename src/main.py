@@ -6,5 +6,5 @@ app.include_router(books_router.router)
 
 
 @app.get("/")
-def index():
+async def index():
     return "Welcome to book club crud application!"

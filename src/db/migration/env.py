@@ -1,11 +1,10 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
-from models import *
 from database import Base
+from models import *  # noqa: F403
+from sqlalchemy import engine_from_config, pool
+
 from config import DB_NAME, DB_SERVER, DB_USER, DB_USER_PASSWORD
 
 # this is the Alembic Config object, which provides

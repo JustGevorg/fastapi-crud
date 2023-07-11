@@ -1,25 +1,66 @@
+variables:
+  POSTGRES_DATABASE: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTRGES_HOST_AUTH_METHOD: trust
+  POSTRGES_HOST: postgres
+  POSTGRESS_PONOS: $PG_GOVNO
+
 stages:
   - build
   - linting
-
-before_script:
-  - apt-get update -q -y
-  - apt install python3-pip  -y
-  - pip install virtualenv
-  - python3 -m venv env
-  - source env/bin/activate
-  - export PYTHONPATH=$(pwd)
-  - pip install -r requirements.txt
+  - testing
 
 build:
   image: python:3.11
   stage: build 
   script:
+    # - apt-get update -q -y
+    # - apt install python3-pip -y
+    # - pip install virtualenv
+    - python3 -m venv env
+    - source env/bin/activate
+    - export PYTHONPATH=$(pwd)
+    - pip install -r requirements.txt
     - echo "Build success"
+  artifacts:
+    paths:
+      - env
 
-pylint:
+linting:
   stage: linting
   image: python:3.11
   script:
+    - source env/bin/activate
     - echo "Linting code"
-    - pylint src
+    - ruff check .
+    - echo "Linting success"
+
+
+testing:
+  stage: testing
+  image: python:3.11
+  services:
+    - name: postgres:15-alpine
+      alias: postgres  
+  variables:
+    PGHOST: postgres
+    POSTGRES_DB_USER: postgres
+    PGUSER: $POSTGRES_DB_USER
+    PGDATABASE: $POSTGRES_DATABASE
+    PGPASSWORD: $POSTGRES_PASSWORD
+  script:
+    - apt update
+    - apt install postgresql-client -y
+    # try setup test_db as postgres from config
+    - psql -h "postgres" -U "$PGUSER" -w -c "CREATE USER runner WITH PASSWORD 'postgres' CREATEDB;"
+    - psql -h "postgres" -U "runner" -W "postgres" -c "CREATE DATABASE test_books_club;"
+    - source env/bin/activate
+    - export PYTHONPATH=$(pwd)
+    - export TEST_DB_USER=runner
+    - export TEST_DB_USER_PASSWORD=postgres
+    - export TEST_DB_SERVER=postgres
+    - export TEST_DB_NAME=test_books_club
+    - pytest
+    - echo "Testing success"
+
