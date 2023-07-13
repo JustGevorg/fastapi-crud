@@ -14,9 +14,6 @@ build:
   image: python:3.11
   stage: build 
   script:
-    # - apt-get update -q -y
-    # - apt install python3-pip -y
-    # - pip install virtualenv
     - python3 -m venv env
     - source env/bin/activate
     - export PYTHONPATH=$(pwd)
@@ -51,7 +48,6 @@ testing:
   script:
     - apt update
     - apt install postgresql-client -y
-    # try setup test_db as postgres from config
     - psql -h "postgres" -U "$PGUSER" -w -c "CREATE USER runner WITH PASSWORD 'postgres' CREATEDB;"
     - psql -h "postgres" -U "runner" -W "postgres" -c "CREATE DATABASE test_books_club;"
     - source env/bin/activate
@@ -66,5 +62,5 @@ testing:
     artifacts:
       reports:
         coverage_report:
-          coberage_format: cobertura
+          coverage_format: cobertura
           path: coverage.xml
