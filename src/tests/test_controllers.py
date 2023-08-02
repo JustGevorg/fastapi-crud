@@ -1,8 +1,8 @@
+import pydantic
+import pytest
 from conftest import test_client
 
 from src import schemas
-import pytest
-import pydantic
 
 
 def test_index_controller():
@@ -38,7 +38,14 @@ def test_update_book_controller():
 
 
 def test_delete_book_controller():
-    deleted_book = test_client.delete(url="/books/3")
-    print(deleted_book)
+    test_client.delete(url="/books/3")
+
     with pytest.raises(pydantic.ValidationError):
         test_client.get(url="/books/3")
+
+
+def test_create_review_controller():
+    response = test_client.post(
+        url="/reviews/", json={"content": "foobafdfdfr", "book_id": 9}
+    )
+    assert schemas.ReviewDB(**response.json())

@@ -1,20 +1,23 @@
-from src import schemas
-from src.db.models import Book
-from sqlalchemy import update, delete
+from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
+
+from src import schemas
+from src.db.models import Book, Review
 
 
 class BaseService:
     def __init__(self, db: Session) -> None:
         self.db = db
 
+    def commit_changes(self) -> None:
+        """Commit query changes and and finish transaction"""
+        self.db.commit()
+
 
 class BookService(BaseService):
     def create_book(self, new_book: schemas.CreateBook) -> Book:
-        new_book = Book(**new_book.dict())
-        self.db.add(new_book)
-        self.db.commit()
-        self.db.refresh(new_book)
+        stmt = insert(Book).values(new_book.dict()).returning(Book)
+        new_book = self.db.execute(stmt).scalars().first()
 
         return new_book
 
@@ -28,7 +31,7 @@ class BookService(BaseService):
             .values(update_data.dict())
             .returning(Book)
         )
-        updated_book = self.db.execute(stmt).scalars().first()
+        updated_book = (self.db.execute(stmt)).scalars().first()
         self.db.commit()
 
         return updated_book
@@ -39,7 +42,22 @@ class BookService(BaseService):
             .where(Book.id == book_id)
             .returning(Book.title, Book.pages_count)
         )
-        deleted_book = self.db.execute(stmt).scalars().all()
+        deleted_book = (self.db.execute(stmt)).scalars().all()
         self.db.commit()
 
         return deleted_book
+
+    def get_book_and_related_reviews(self, book_id: int) -> Book:
+        stmt = select(Book).join(Book.reviews)
+        book_with_related_reviews = (self.db.execute(stmt)).scalar()
+        self.db.commit()
+
+        return book_with_related_reviews
+
+
+class ReviewService(BaseService):
+    def create_review(self, new_review: schemas.CreateReview) -> Review:
+        stmt = insert(Review).values(new_review.dict()).returning(Review)
+        created_review = self.db.execute(stmt)
+
+        return created_review.scalars().first()

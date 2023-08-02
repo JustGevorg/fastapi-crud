@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -13,11 +14,18 @@ class CreateBook(BaseModel):
     pages_count: int
 
 
-class BookDB(BaseAlchemySchema, CreateBook):
+class CreateReview(BaseModel):
+    content: str
+    book_id: int
+
+
+class ReviewDB(BaseAlchemySchema, CreateReview):
     class Config:
         orm_mode = True
 
 
-class CreateReview(BaseModel):
-    content: str
-    book_id: int
+class BookDB(BaseAlchemySchema, CreateBook):
+    reviews: list[ReviewDB]
+
+    class Config:
+        orm_mode = True
